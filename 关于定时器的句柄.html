@@ -7,25 +7,9 @@
 <body>
 	<button>change</button>
 	<script>
-	// var timer;
 	var btn = document.querySelector('button');
-	// btn.addEventListener('click', function() {
-	// 	var a = 0;
-	// 	timer = setInterval(function(){
- //   			a++;
- //   			console.log(a);
- //   			if (a>10) {
- //   				clearInterval(timer);
- //   			}
-	// 	}, 500);
-	// 	timer = setInterval(function() {
-	// 		console.log('test');
-	// 		if (a>20) {
-	// 			clearInterval(timer);
-	// 		}
-	// 	}, 500);
-	// }, false)
-	
+	// 解决同一浏览器开启多个定时器,导致无法关闭的问题
+	// 通过数组的key来唯一标示定时器的name
 	
 	/*将定时器装入数组*/
 	var arr = [];
