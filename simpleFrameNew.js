@@ -731,5 +731,6 @@
 	function $(content) {
 		return $$.queryCheck(content);
 	}
+	// 暴露对象
 	w.$ = $;
 })(window);
