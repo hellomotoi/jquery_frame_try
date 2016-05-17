@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>面向对象运动框架</title>
+	<style type="text/css">
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		div {
+			width: 100px;
+			height: 100px;
+			background-color: green;
+			opacity: 0.9;
+			position: absolute;
+			top: 100px;
+		}
+		.box1 {
+			left: 0;
+		}
+		.box2 {
+			left: 110px;
+		}
+		.box3 {
+			left: 1110px;
+		}
+		.box4 {
+			left: 1220px;
+		}
+		button {
+			width: 200px;
+			height: 50px;
+			margin: 0 auto;
+			display: block;
+			text-align: center;
+			background-color: #ccc;
+		}
+	</style>
+</head>
+<body>
+	<button>点击按钮,开始录制本次运动</button>
+	<div id="box1" class="box1"></div>
+	<div id="box2" class="box2"></div>
+	<div id="box3" class="box3"></div>
+	<div id="box4" class="box4"></div>
+	<script src="simpleFrame.js"></script>
+	<script>
+	 	var box1 = document.querySelector('#box1');
+	 	var box2 = document.querySelector('#box2');
+	 	var box3 = document.querySelector('#box3');
+	 	var box4 = document.querySelector('#box4');
+	 	var btn = document.querySelector('button');
+	 	var json = {
+			width: 300,
+			height: 300,
+			left: 200,
+			top: 200,
+			opacity: 0.2
+		}
+	 	btn.addEventListener('click', function() {
+	 		this.style.backgroundColor = '#f40';
+	 		var animate = new Animate();
+	 		animate.add(box1,json,3000);
+	 		animate.add(box2,json,3000);
+	 		animate.add(box3,json,5000);
+	 		animate.add(box4,json,1000);
+	 	}, false);
+	 	function Animate() {
+	 		this.timer;
+	 		this.queen = [];
+	 		// 存放定时器
+	 		this.clean = [];
+	 		// 定时器index
+	 		this.a = 0;
+	 	}
+	 	Animate.prototype = {
+	 		// 执行函数
+	 		add: function(dom,json,duration) {
+	 			// 初始化变量
+	 			this.adapterMany(dom,json,duration);
+	 			this.run();
+	 			// console.log(this.clean);
+	 		},
+	 		// 运行函数
+	 		run: function() {
+	 			// 开启定时器,并运行move函数
+	 			this.clean[this.a++] = setInterval(this.loop.bind(this), 12);
+	 		},
+	 		loop: function() {
+	 			for (var i = 0; i < this.queen.length; i++) {
+	 				var obj = this.queen[i];
+	 				this.move(obj);
+	 			}
+	 		},
+	 		move: function(obj) {
+	 			if (obj.tween > 1) {
+	 				// 检测定时器
+	 				this.stopTime();
+	 			}else {
+		 			obj.passTime = +new Date();
+		 			// 检测定时器
+	 				console.log(obj.passTime);
+		 			obj.tween = this.getTween(obj.startTime,obj.passTime,'easeOutBounce',obj);
+		 			this.setParam(obj.ele,obj.styles,obj);
+	 			}
+	 		},
+	 		// 设置属性
+	 		setParam: function(dom,arr,obj) {
+	 			for (var i = 0; i < arr.length; i++) {
+	 				this.setOneParma(dom,arr[i].parma,obj.tween*arr[i].change,arr[i].startParma);
+	 			}
+	 		},
+	 		// 设置单个属性
+	 		setOneParma: function(dom,key,step,begin) {
+	 			if (key == 'opacity') {
+	 				$$._css(dom,key,step+begin);
+	 			}else {
+	 				$$._css(dom,key,step+begin+'px');
+	 			}
+	 		},
+	 		// 初始化方法
+
+	 		// 初始化多个变量
+	 		adapterMany: function(dom,json,duration) {
+	 			var adapters = this.adapter(dom,json,duration);
+	 			this.queen.push(adapters);
+	 		},
+	 		// 初始化变量
+	 		adapter: function(dom,json,duration) {
+	 			var obj = {};
+	 			obj.ele = dom;
+	 			obj.startTime = +new Date();
+	 			obj.tween = 0;
+	 			obj.duration = duration;
+	 			obj.styles = this.getStyle(dom,json);
+	 			return obj;
+	 		},
+	 		// 更改传入json的格式,方便使用
+	 		getStyle: function(dom,json) {
+	 			var arr = [];
+	 			for (var key in json) {
+	 				var obj = {};
+	 				obj.parma = key;
+	 				obj.startParma = parseFloat($$._css(dom,key));
+	 				obj.change = parseFloat(json[key] - obj.startParma);
+	 				arr.push(obj);
+	 			}
+	 			return arr;
+	 		},
+	 		// 获得tween,基于时间的变化比例
+	 		getTween: function(begin,end,ease,obj) {
+	            var eases = {
+	                //线性匀速
+	                linear:function (t, b, c, d){
+	                    return (c - b) * (t/ d);
+	                },
+	                //弹性运动
+	                easeOutBounce:function (t, b, c, d) {
+	                    if ((t/=d) < (1/2.75)) {
+	                        return c*(7.5625*t*t) + b;
+	                    } else if (t < (2/2.75)) {
+	                        return c*(7.5625*(t-=(1.5/2.75))*t + .75) + b;
+	                    } else if (t < (2.5/2.75)) {
+	                        return c*(7.5625*(t-=(2.25/2.75))*t + .9375) + b;
+	                    } else {
+	                        return c*(7.5625*(t-=(2.625/2.75))*t + .984375) + b;
+	                    }
+	                },
+	                //其他
+	                swing: function (t, b, c, d) {
+	                    return this.easeOutQuad(t, b, c, d);
+	                },
+	                easeInQuad: function (t, b, c, d) {
+	                    return c*(t/=d)*t + b;
+	                },
+	                easeOutQuad: function (t, b, c, d) {
+	                    return -c *(t/=d)*(t-2) + b;
+	                },
+	                easeInOutQuad: function (t, b, c, d) {
+	                    if ((t/=d/2) < 1) return c/2*t*t + b;
+	                    return -c/2 * ((--t)*(t-2) - 1) + b;
+	                },
+	                easeInCubic: function (t, b, c, d) {
+	                    return c*(t/=d)*t*t + b;
+	                },
+	                easeOutCubic: function (t, b, c, d) {
+	                    return c*((t=t/d-1)*t*t + 1) + b;
+	                },
+	                easeInOutCubic: function (t, b, c, d) {
+	                    if ((t/=d/2) < 1) return c/2*t*t*t + b;
+	                    return c/2*((t-=2)*t*t + 2) + b;
+	                },
+	                easeInQuart: function (t, b, c, d) {
+	                    return c*(t/=d)*t*t*t + b;
+	                },
+	                easeOutQuart: function (t, b, c, d) {
+	                    return -c * ((t=t/d-1)*t*t*t - 1) + b;
+	                },
+	                easeInOutQuart: function (t, b, c, d) {
+	                    if ((t/=d/2) < 1) return c/2*t*t*t*t + b;
+	                    return -c/2 * ((t-=2)*t*t*t - 2) + b;
+	                },
+	                easeInQuint: function (t, b, c, d) {
+	                    return c*(t/=d)*t*t*t*t + b;
+	                },
+	                easeOutQuint: function (t, b, c, d) {
+	                    return c*((t=t/d-1)*t*t*t*t + 1) + b;
+	                },
+	                easeInOutQuint: function (t, b, c, d) {
+	                    if ((t/=d/2) < 1) return c/2*t*t*t*t*t + b;
+	                    return c/2*((t-=2)*t*t*t*t + 2) + b;
+	                },
+	                easeInSine: function (t, b, c, d) {
+	                    return -c * Math.cos(t/d * (Math.PI/2)) + c + b;
+	                },
+	                easeOutSine: function (t, b, c, d) {
+	                    return c * Math.sin(t/d * (Math.PI/2)) + b;
+	                },
+	                easeInOutSine: function (t, b, c, d) {
+	                    return -c/2 * (Math.cos(Math.PI*t/d) - 1) + b;
+	                },
+	                easeInExpo: function (t, b, c, d) {
+	                    return (t==0) ? b : c * Math.pow(2, 10 * (t/d - 1)) + b;
+	                },
+	                easeOutExpo: function (t, b, c, d) {
+	                    return (t==d) ? b+c : c * (-Math.pow(2, -10 * t/d) + 1) + b;
+	                },
+	                easeInOutExpo: function (t, b, c, d) {
+	                    if (t==0) return b;
+	                    if (t==d) return b+c;
+	                    if ((t/=d/2) < 1) return c/2 * Math.pow(2, 10 * (t - 1)) + b;
+	                    return c/2 * (-Math.pow(2, -10 * --t) + 2) + b;
+	                },
+	                easeInCirc: function (t, b, c, d) {
+	                    return -c * (Math.sqrt(1 - (t/=d)*t) - 1) + b;
+	                },
+	                easeOutCirc: function (t, b, c, d) {
+	                    return c * Math.sqrt(1 - (t=t/d-1)*t) + b;
+	                },
+	                easeInOutCirc: function (t, b, c, d) {
+	                    if ((t/=d/2) < 1) return -c/2 * (Math.sqrt(1 - t*t) - 1) + b;
+	                    return c/2 * (Math.sqrt(1 - (t-=2)*t) + 1) + b;
+	                },
+	                easeInElastic: function (t, b, c, d) {
+	                    var s=1.70158;var p=0;var a=c;
+	                    if (t==0) return b;  if ((t/=d)==1) return b+c;  if (!p) p=d*.3;
+	                    if (a < Math.abs(c)) { a=c; var s=p/4; }
+	                    else var s = p/(2*Math.PI) * Math.asin (c/a);
+	                    return -(a*Math.pow(2,10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )) + b;
+	                },
+	                easeOutElastic: function (t, b, c, d) {
+	                    var s=1.70158;var p=0;var a=c;
+	                    if (t==0) return b;  if ((t/=d)==1) return b+c;  if (!p) p=d*.3;
+	                    if (a < Math.abs(c)) { a=c; var s=p/4; }
+	                    else var s = p/(2*Math.PI) * Math.asin (c/a);
+	                    return a*Math.pow(2,-10*t) * Math.sin( (t*d-s)*(2*Math.PI)/p ) + c + b;
+	                },
+	                easeInOutElastic: function (t, b, c, d) {
+	                    var s=1.70158;var p=0;var a=c;
+	                    if (t==0) return b;  if ((t/=d/2)==2) return b+c;  if (!p) p=d*(.3*1.5);
+	                    if (a < Math.abs(c)) { a=c; var s=p/4; }
+	                    else var s = p/(2*Math.PI) * Math.asin (c/a);
+	                    if (t < 1) return -.5*(a*Math.pow(2,10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )) + b;
+	                    return a*Math.pow(2,-10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )*.5 + c + b;
+	                },
+	                easeInBack: function (t, b, c, d, s) {
+	                    if (s == undefined) s = 1.70158;
+	                    return c*(t/=d)*t*((s+1)*t - s) + b;
+	                },
+	                easeOutBack: function (t, b, c, d, s) {
+	                    if (s == undefined) s = 1.70158;
+	                    return c*((t=t/d-1)*t*((s+1)*t + s) + 1) + b;
+	                },
+	                easeInOutBack: function (t, b, c, d, s) {
+	                    if (s == undefined) s = 1.70158;
+	                    if ((t/=d/2) < 1) return c/2*(t*t*(((s*=(1.525))+1)*t - s)) + b;
+	                    return c/2*((t-=2)*t*(((s*=(1.525))+1)*t + s) + 2) + b;
+	                },
+	                easeInBounce: function (t, b, c, d) {
+	                    return c - this.easeOutBounce (d-t, 0, c, d) + b;
+	                },
+	                easeInOutBounce: function (t, b, c, d) {
+	                    if (t < d/2) return this.easeInBounce (t*2, 0, c, d) * .5 + b;
+	                    return this.easeOutBounce (t*2-d, 0, c, d) * .5 + c*.5 + b;
+	                }
+	            };
+	            var change = end - begin;
+	            return eases[ease](change,0,1,obj.duration);
+	 		},
+	 		// 结束
+	 		stopTime: function() {
+	 			clearInterval(this.clean[this.a]);
+	 		},
+	 		// 没用上,最后结束总是提示length是undefined
+	 		destroy: function() {
+	 			// 定时器中最长时间之后,使用timeOut来清除数组中所有定时器
+	 			setTimeout(function(){
+	 				var len = this.clean.length;
+		 			for (var i = 0; i < len; i++) {
+		 				clearInterval(this.clean[i]);
+		 			}
+	 			}, 5000);
+	 		}
+	 	}
+	</script>
+</body>
+</html>

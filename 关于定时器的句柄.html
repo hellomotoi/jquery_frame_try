@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>demo</title>
+</head>
+<body>
+	<button>change</button>
+	<script>
+	// var timer;
+	var btn = document.querySelector('button');
+	// btn.addEventListener('click', function() {
+	// 	var a = 0;
+	// 	timer = setInterval(function(){
+ //   			a++;
+ //   			console.log(a);
+ //   			if (a>10) {
+ //   				clearInterval(timer);
+ //   			}
+	// 	}, 500);
+	// 	timer = setInterval(function() {
+	// 		console.log('test');
+	// 		if (a>20) {
+	// 			clearInterval(timer);
+	// 		}
+	// 	}, 500);
+	// }, false)
+	
+	
+	/*将定时器装入数组*/
+	var arr = [];
+	/*将定时器赋值给arr[index]是可以的,下面来测试push*/
+	// arr[0] = setInterval(function(){
+	// 	console.log('test0');
+	// }, 1000);
+	// arr[1] = setInterval(function(){
+	// 	console.log('test1');
+	// }, 2000);
+
+
+	/*使用push,不能在定时器最后一句加分号,依然是可以停止的*/
+	arr.push(
+		setInterval(function(){
+			console.log('test0');
+		}, 1000)
+	)
+	arr.push(
+		setInterval(function(){
+			console.log('test1');
+		}, 1000)
+	)
+	console.log(arr);
+	btn.addEventListener('click', function(){
+		for (var i = 0; i < arr.length; i++) {
+			clearInterval(arr[i]);
+		}
+	}, false)
+	</script>
+</body>
+</html>

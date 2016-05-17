@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>模块化</title>
+	<style type="text/css">
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		button:nth-child(1) {
+			font-size: 15px;
+			line-height: 15px;
+			height: 30px;
+			background-color: red;
+		}
+		div {
+			width: 100px;
+			height: 100px;
+			background-color: red;
+			margin-top: 5px;
+		}
+		div:nth-of-type(3) {
+			background-color: green;
+		}
+		div[name='hello'] {
+			background-color: yellow;
+		}
+		div:nth-child(5) {
+			background-color: purple;
+		}
+		div~div {
+			margin-left: 10px;
+		}
+	</style>
+</head>
+<body>
+	<button id="btn">按钮</button>
+	<div id="box" class="box">我是第一</div>
+	<div class="box" name='hello'>我是第二</div>
+	<div class="box">我是第三</div>
+	<div class="box">我是第四</div>
+</body>
+</html>
+<script>
+	(function(w){
+		function Itcast(ele,context) {
+			return this.init(ele,context);
+		}
+		Itcast.prototype = {
+			init: function(ele,context) {
+				if (typeof ele == 'string') {
+					context = context || document;
+					var doms = context.querySelectorAll(ele);
+					this.length = doms.length;
+					for (var i = 0; i < this.length; i++) {
+						console.log(this);
+						this[i] = doms[i];
+					}
+				}else {
+					this.length = 1;
+					this[0] = ele;
+				}
+				return this;
+			},
+			hide: function() {
+				// for (var i = 0; i < this.elements.length; i++) {
+				// 	this.elements[i].style.display = 'none';
+				// }
+				this.each(function() {
+					this.style.display = 'none';
+				});
+				return this;
+			},
+			show: function() {
+				// for (var i = 0; i < this.elements.length; i++) {
+				// 	this.elements[i].style.display = 'block';
+				// }
+				this.each(function() {
+					this.style.display = 'block';
+				});
+				return this;
+			},
+			each: function(fn) {
+				/*each通过call方法,更改this指针的指向,貌似apply也行*/
+				for (var i = 0; i < this.length; i++) {
+					fn.call(this[i]);
+				}
+			},
+			get: function(index) {
+				return this[index];
+			},
+			eq: function(index) {
+				// 通过get来获取dom元素
+				var dom = this.get(index);
+				return this.init(dom);
+			},
+			first: function() {
+				return this.eq(0);
+			},
+			last: function() {
+				return this.eq(this.length-1);
+			},
+			html: function() {
+				var arg = arguments;
+				var len = arg.length;
+				// 如果没有传入传入参数,说明采取获取模式
+				if (len === 0) {
+					return this[0].innerHTML;
+				}else {
+					this.each(function(){
+						this.innerHTML = arg[0];
+					});
+				}
+				return this;
+			},
+			on: function(type,fn) {
+				/*事件绑定*/
+				if (document.addEventListener) {
+					for (var i = 0; i < this.length; i++) {
+						this[i].addEventListener(type, fn, false);
+					}
+				}else if (document.attachEvent) {
+					for (var i = 0; i < this.length; i++) {
+						this[i].attachEvent('on'+type, fn);
+					}
+				}else {
+					for (var i = 0; i < this.length; i++) {
+						this[i]['on'+type] = fn;
+					}
+				}
+				return this;
+			}
+		};
+		function $$(ele,context) {
+			if (typeof ele === 'string') {
+				return new Itcast(ele,context);
+			}else {
+				window.onload = ele;
+			}
+		}
+		function extend() {
+			var arg = arguments;
+			var len = arg.length;
+			var target;
+			if (len == 0) {
+				return;
+			}else if (len == 1) {
+				target = Itcast.prototype;
+			}else {
+				target = arg[0];
+			}
+		}
+		w.$ = $$;
+	})(window);
+	var btn = document.querySelector('button');
+	$(function(){
+		btn.style.backgroundColor = 'green';
+	});
+	$(function(){
+		$('button').on('click',function() {
+			$('.box').hide();
+		});
+	});
+</script>

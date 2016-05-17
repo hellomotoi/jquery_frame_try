@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>框架</title>
+	<style type="text/css">
+		#box {
+			height: 20px;
+			background-color: green;
+		}
+	</style>
+</head>
+<body>
+	<div id="boxBig">
+		<span class='change'>大盒子:点我变色</span>
+		<span>大盒子:点我变色</span>
+		<span>大盒子:点我变色</span>
+	</div>
+	<div id="box">
+		<span>点我变色</span>
+		<span>点我变色</span>
+		<span class='change'>点我变色</span>
+		<span>点我变色</span>
+		<span>点我变色</span>
+	</div>
+</body>
+</html>
+<script src="simpleFrame.js"></script>
+<script>
+	var dom = $$.id('box');
+	// 全局找spans
+	var spans = $tag('span');
+	// 在box中找span
+	// var spans = $tag('span',dom);
+	for (var i = 0; i < spans.length; i++) {
+		spans[i].onclick = function(e) {
+			$$.stopBubble(e);
+			for (var j = 0; j < spans.length; j++) {
+				spans[j].style.background = '';
+			}
+			this.style.backgroundColor = "red";
+		}
+	};
+
+	// 初级版
+	// function $tag(target,id) {
+	// 	var dom = $$.id(id);
+	// 	return dom.getElementsByTagName(target);
+	// }
+
+	// 改进版
+	function $tag(target,id) {
+		// 思路
+		// 现获取范围容器
+		// 然后再容器中寻找元素集合
+		var dom = getDom(id);
+		var eles = getElements(dom,target);
+		return eles;
+		function getDom(id) {
+			var dom;
+			dom = $$.isString(id)?$$.id(id):id;
+			return dom;
+		}
+		function getElements(cont,tag) {
+			var elements;
+			// 如果范围容器不为空,即在容器中选择
+			if (cont) {
+				elements = cont.getElementsByTagName(tag);
+			}else {
+				elements = document.getElementsByTagName(tag);
+			}
+			return elements;
+		}
+	}
+
+	// 按class来选择元素
+	// function $class(classname) {
+	// 	if (document.getElementsByClassName) {
+	// 		return document.getElementsByClassName(classname);
+	// 	}
+	// 	// 获取页面上的所有元素
+	// 	var eles = document.getElementsByTagName('*');
+	// 	// 满足条件的元素所存放的容器
+	// 	var arr = [];
+	// 	for (var i = 0,len = eles.length; i < len; i++) {
+	// 		var classArr = eles[i].className.split(' ');
+	// 		for (var j = 0; j < classArr.length; j++) {
+	// 			if (classArr[j] == classname) {
+	// 				arr.push(eles[i]);
+	// 			}
+	// 		};
+	// 	};
+	// 	return arr;
+	// }
+
+	// 判断是否需要在当前id对象下寻找该class元素
+	function _class(classname,id) {
+		var dom = $$.isString(id)?$$.id(id):id;
+		if(dom){
+			return getClass(classname,dom);
+		}
+		return getClass(classname,document);
+		function getClass(classname,cont) {
+			if (cont.getElementsByClassName) {
+				return cont.getElementsByClassName(classname);
+			}
+			// 获取页面上的所有元素
+			var eles = cont.getElementsByTagName('*');
+			// 满足条件的元素所存放的容器
+			var arr = [];
+			for (var i = 0,len = eles.length; i < len; i++) {
+				var classArr = eles[i].className.split(' ');
+				for (var j = 0; j < classArr.length; j++) {
+					if (classArr[j] == classname) {
+						arr.push(eles[i]);
+					}
+				};
+			};
+			return arr;
+		}
+	}
+	console.log(_class('change'));
+	console.log(_class('change','box'));
+	_class('change')[0].onclick = function(e) {
+		$$.stopBubble(e);
+		this.style.backgroundColor = 'yellow';
+	}
+
+	// 集合选择器,选择传入字符串所包含的所有元素对象
+	function $group(str) {
+		// 将传入的str转化为数组
+		var items = str.split(',');
+		var result = [];
+		for (var i = 0; i < items.length; i++) {
+			// 截取字符
+			var first = items[i].charAt(0);
+			var name = items[i].slice(1);
+			// 相应的获取元素对象
+			if (first == '#') {
+				var dom = $$.id(name);
+				result.push(dom);
+			}else if (first == '.') {
+				var list = _class(name);
+				for (var j = 0,len = list.length; j < len; j++) {
+					result.push(list[j]);
+				};
+			}else {
+				var tags = $tag(items[i]);
+				for (var k = 0,len = tags.length; k < len; k++) {
+					result.push(tags[k]);
+				};
+			}
+		};
+		return result;
+	}
+	console.log($group('.change,#box,div'));
+
+	/*IE6/7/8 DOM2的事件绑定*/
+	// dom.attachEvent('onclick', function(e){
+	// 	console.log(this);
+	// 	console.log(e);
+	// 	// e.srcElement.style.backgroundColor = 'red';
+	// 	this.event.srcElement.style.backgroundColor = 'red';
+	// })
+</script>

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>框架</title>
+	<style type="text/css">
+		#box {
+			height: 20px;
+			background-color: green;
+		}
+	</style>
+</head>
+<body>
+	<div id="boxBig">
+		<span class='change'>大盒子:点我变色</span>
+		<span>大盒子:点我变色</span>
+		<span>大盒子:点我变色</span>
+		<div>
+			<p>要选我啊</p>
+			<p class="my">要选我啊</p>
+			<p class="myp">要选我啊</p>
+			<p>要选我啊</p>
+		</div>
+	</div>
+	<div id="box" class="happy">
+		<span>点我变色</span>
+		<span name='abc'>点我变色</span>
+		<span class='change'>点我变色</span>
+		<span>点我变色</span>
+		<span>点我变色</span>
+		<p class="cont my">我是my标签...</p>
+		<div>
+			<p class="cont my">我是p标签...</p>
+		</div>
+		<div>
+			<p>我是p标签</p>
+			<p class="my">我是p标签</p>
+			<p>我是p标签</p>
+			<p>我是p标签</p>
+		</div>
+		<div>
+			<p class="my">我是p标签</p>
+		</div>
+	</div>
+</body>
+</html>
+<script src="simpleFrame.js"></script>
+<script>
+	// // 改进版
+	// function $tag(target,id) {
+	// 	// 思路
+	// 	// 现获取范围容器
+	// 	// 然后再容器中寻找元素集合
+	// 	var dom = getDom(id);
+	// 	var eles = getElements(dom,target);
+	// 	return eles;
+	// 	function getDom(id) {
+	// 		var dom;
+	// 		dom = $$.isString(id)?$$.id(id):id;
+	// 		return dom;
+	// 	}
+	// 	function getElements(cont,tag) {
+	// 		var elements;
+	// 		// 如果范围容器不为空,即在容器中选择
+	// 		if (cont) {
+	// 			elements = cont.getElementsByTagName(tag);
+	// 		}else {
+	// 			elements = document.getElementsByTagName(tag);
+	// 		}
+	// 		return elements;
+	// 	}
+	// }
+	// // 判断是否需要在当前id对象下寻找该class元素
+	// function _class(classname,id) {
+	// 	var dom = $$.isString(id)?$$.id(id):id;
+	// 	if(dom){
+	// 		return getClass(classname,dom);
+	// 	}
+	// 	return getClass(classname,document);
+	// 	function getClass(classname,cont) {
+	// 		if (cont.getElementsByClassName) {
+	// 			return cont.getElementsByClassName(classname);
+	// 		}
+	// 		// 获取页面上的所有元素
+	// 		var eles = cont.getElementsByTagName('*');
+	// 		// 满足条件的元素所存放的容器
+	// 		var arr = [];
+	// 		for (var i = 0,len = eles.length; i < len; i++) {
+	// 			var classArr = eles[i].className.split(' ');
+	// 			for (var j = 0; j < classArr.length; j++) {
+	// 				if (classArr[j] == classname) {
+	// 					arr.push(eles[i]);
+	// 				}
+	// 			};
+	// 		};
+	// 		return arr;
+	// 	}
+	// }
+	// // 集合选择器,选择传入字符串所包含的所有元素对象
+	// function $group(str) {
+	// 	// 将传入的str转化为数组
+	// 	var items = str.split(',');
+	// 	var result = [];
+	// 	for (var i = 0; i < items.length; i++) {
+	// 		// 截取字符
+	// 		var first = items[i].charAt(0);
+	// 		var name = items[i].slice(1);
+	// 		// 相应的获取元素对象
+	// 		if (first == '#') {
+	// 			var dom = $$.id(name);
+	// 			result.push(dom);
+	// 		}else if (first == '.') {
+	// 			var list = _class(name);
+	// 			for (var j = 0,len = list.length; j < len; j++) {
+	// 				result.push(list[j]);
+	// 			};
+	// 		}else {
+	// 			var tags = $tag(items[i]);
+	// 			for (var k = 0,len = tags.length; k < len; k++) {
+	// 				result.push(tags[k]);
+	// 			};
+	// 		}
+	// 	};
+	// 	return result;
+	// }
+	// // 层级选择器
+	// function layer(str) {
+	// 	var context = [];
+	// 	var result = [];
+	// 	// 将传入参数转化为数组
+	// 	var arr = str.split(' ');
+	// 	for (var i = 0; i < arr.length; i++) {
+	// 		context = result;
+	// 		result = [];
+	// 		var item = arr[i];
+	// 		var first = item.charAt(0);
+	// 		var name = item.slice(1);
+	// 		if (first == '#') {
+	// 			result.push($$.id(name));
+	// 		}else if(first == '.') {
+	// 			getClass(name);
+	// 		}else {
+	// 			getTags(item);
+	// 		}
+	// 	}
+	// 	function getTags(item) {
+	// 		if (context.length) {
+	// 			for (var j = 0; j < context.length; j++) {
+	// 				var tagDoms = $tag(item,context[j]);
+	// 				pushArray(tagDoms);
+	// 			};
+	// 		}else {
+	// 			var list = $tag(item);
+	// 			pushArray(list);
+	// 		}
+	// 	}
+	// 	function getClass(name) {
+	// 		if (context.length) {
+	// 			for (var i = 0; i < context.length; i++) {
+	// 				var classDoms = _class(name,context[i]);
+	// 				pushArray(classDoms);
+	// 			};
+	// 		}else {
+	// 			var list = _class(name);
+	// 			pushArray(list);
+	// 		}
+	// 	}
+	// 	function pushArray(list){
+	// 		for (var i = 0; i < list.length; i++) {
+	// 			result.push(list[i]);
+	// 		};
+	// 	}
+	// 	return result;
+	// }
+
+	var doms = $$._layer('#box div .my');
+	var doms2 = _layerGroup('#box div .my,div .myp');
+	var doms3 = document.getElementsByTagName('div');
+	// var doms4 = doms3.getElementsByClassName('myp');
+	console.log(doms);
+	console.log(doms2);
+	console.log(doms3);
+	// console.log(doms4);
+	var box = document.getElementById('box');
+	// console.log(_css('.my','background','blue'));
+	_removeAttrs('span','class','name');
+	_addClass('#box','aa bb cc');
+	_removeClass('#box','aa cc');
+	console.log(box.className);
+	// doms3[0].onclick = function() {
+	// 	console.log(arguments[0]);
+	// }
+	// arra();
+	// function arra(){
+	// 	console.log(arguments.length);
+	// }
+
+/*----------------------------------------------------------------------*/
+
+	// 层级+集合选择
+	function _layerGroup(str) {
+		// 将传入的str转化为数组
+		var items = str.split(',');
+		var result = [];
+		for (var i = 0; i < items.length; i++) {
+			var ele = items[i];
+			var cont = $$._layer(ele);
+			pushRes(cont);
+		};
+		function pushRes(list) {
+			for (var i = 0; i < list.length; i++) {
+				result.push(list[i]);
+			};
+		}
+		return result;
+	}
+
+	// 样式选择器
+	function _css(obj,key,value) {
+		var doms = $$.queryCheck(obj);
+		if (value) {
+			for (var i = 0; i < doms.length; i++) {
+				setAttr(doms[i],key,value);
+			};
+		}else {
+			return getAttr(doms[0],key);
+		}
+		function getAttr(obj,attr) {
+			if (obj.currentStyle) {
+				return obj.currentStyle[attr];
+			}
+			return window.getComputedStyle(obj, null)[attr]
+		}
+		function setAttr(obj,attr,val) {
+			return obj.style[attr] = val;
+		}
+	}
+
+	function css(context, key, value){
+		var dom = $$.isString(context)?$$.$all(context) : context;
+		//如果是数组
+		if(dom.length){
+		//先骨架骨架 -- 如果是获取模式 -- 如果是设置模式
+		//如果value不为空，则表示设置
+		if(value){
+			for(var i = dom.length - 1; i >= 0; i--){
+				setStyle(dom[i],key, value);
+			}
+		//如果value为空，则表示获取
+		}else{
+			return getStyle(dom[0]);
+		}
+			//如果不是数组
+		}else{
+			if(value){
+				setStyle(dom,key, value);
+			}else{
+				return getStyle(dom);
+			}
+		}
+		function getStyle(dom){
+			if(dom.currentStyle){
+				return dom.currentStyle[key];
+			}else{
+				return getComputedStyle(dom,null)[key];
+			}
+		}
+		function setStyle(dom,key,value){
+			dom.style[key] = value;
+		}
+	}
+
+	// 隐藏和显示
+	function _hide(context) {
+		var doms = $$.queryCheck(context);
+		for (var i = 0; i < doms.length; i++) {
+			doms[i].style.display = 'none';
+		};
+	}
+	function _show(context) {
+		var doms = $$.queryCheck(context);
+		for (var i = 0; i < doms.length; i++) {
+			doms[i].style.display = 'block';
+		};
+	}
+
+	//  隐藏和显示的新版本,利用_css
+	function _hideNew(context) {
+		_css(context,'display','none')
+	}
+	function _showNew(context) {
+		_css(context,'display','block')
+	}
+
+	// 属性设置和获取
+	function _attr(context,key,value) {
+		var doms = $$.queryCheck(context);
+		if (value) {
+			for (var i = 0; i < doms.length; i++) {
+				doms[i].setAttribute(key, value);
+			};
+		}else {
+			return doms[0].getAttribute(key);
+		}
+	}
+
+	// 清除属性
+	function _removeAttr (context,key) {
+		var doms = $$.queryCheck(context);
+		for (var i = 0; i < doms.length; i++) {
+			doms[i].removeAttribute(key);
+		};
+	}
+
+	/*Array.prototype.slice.call(arguments);*/
+
+	// 清除多个对象的多个属性
+	function _removeAttrs() {
+		// 获取所有的传入的实参arguments
+		var list = Array.prototype.slice.call(arguments);
+		var context = list[0];
+		var names = list.slice(1);
+		var doms = $$.queryCheck(context);
+		for (var i = 0; i < doms.length; i++) {
+			removes(doms[i]);
+		};
+		function removes(dom) {
+			for (var j = 0; j < names.length; j++) {
+				dom.removeAttribute(names[j]);
+			};
+		}
+	}
+
+	// 添加class
+	function _addClass(context,classname) {
+		var doms = $$.queryCheck(context);
+		for (var i = 0; i < doms.length; i++) {
+			adds(doms[i]);
+		};
+		function adds(dom) {
+			dom.className += ' ' + classname;
+		}
+	}
+
+	// 删除class
+	function _removeClass(context,classname) {
+		var doms = $$.queryCheck(context);
+		var classList = classname.split(' ');
+		for (var i = 0; i < doms.length; i++) {
+			var name = removes(doms[i]).join(' ');
+			doms[i].className = name;
+		};
+		function removes(dom) {
+			var list = dom.className.split(' ');
+			for (var k = 0; k < classList.length; k++) {
+				for (var j = 0; j < list.length; j++) {
+					if (list[j] == classList[k]) {
+						list[j] = '';
+					}
+				}
+			}
+			return list;
+		}
+	}
+
+	//如何编写
+	function removeClass(context,className){
+	    /*思路*/
+	   /* 第一步：获取所有的元素*/
+	    var doms = $$.$all(context)
+	   /* 第二步：遍历删除每个元素的class*/
+	    for(var i=0;i<doms.length;i++){
+	        //删除每个元素的class
+	        deleteClassName(doms[i])
+	    }
+	    function deleteClassName(dom){
+	       /* replace:用后面的字符串替换className*/
+	        dom.className =  dom.className.replace(className,'')
+	    }
+	}
+
+	// 删除类名
+	function _RemoveClass(context,classname) {
+		var doms = document.querySelectorAll(context);
+		var classList = classname.split(' ');
+		for (var i = 0; i < doms.length; i++) {
+			var name = removes(doms[i]).join(' ');
+			console.log(name);
+			doms[i].className = name;
+		};
+		function removes(dom) {
+			var list = dom.className.split(' ');
+			for (var k = 0; k < classList.length; k++) {
+				var result = [];
+				for (var j = 0; j < list.length; j++) {
+					if (list[j] != classList[k]) {
+						result.push(list[j]);
+					}
+				}
+				list = result;
+			}
+			return result;
+		}
+	}
+
+	//设置html
+	function html(context,str){
+	    //1.获得所有元素
+	    var doms = $$.queryCheck(context);
+	    //2.遍历每一个设置html
+	    if (str) {
+	    	for(var i=0;i<doms.length;i++){
+	        	doms[i].innerHTML = str;
+	    	}
+	    }else {
+    		return doms[0].innerHTML;
+	    }
+	}
+</script>
